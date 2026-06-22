@@ -19,7 +19,7 @@
   <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Platform.targets" />
   <Import Project="$(SolutionDir)submodules/ChaosPresets.References/ProjectReferences/ChaosFramework.Collections.targets" />
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(PlatformNotSupported)'!='true'">
     <PackageReference Include="OpenTK" Version="4.9.4" />
     <PackageReference Include="OpenTK.GLControl" Version="4.0.2" />
   </ItemGroup>

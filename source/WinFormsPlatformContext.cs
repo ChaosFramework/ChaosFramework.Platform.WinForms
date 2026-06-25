@@ -1,3 +1,4 @@
+using ChaosFramework.Math.Vectors;
 using OpenTK.GLControl;
 using System;
 using System.Windows.Forms;
@@ -8,15 +9,21 @@ namespace ChaosFramework.Platform.WinForms
         : PlatformContext
         , GlContext
     {
-        class FormWindow : Window
+        class FullscreenForm : Fullscreen
         {
             public readonly Form form;
             readonly GLControl control;
 
-            int Window.width => form.Width;
-            int Window.height => form.Height;
+            uint PresentationContext.width => (uint)form.Width;
+            uint PresentationContext.height => (uint)form.Height;
 
-            public FormWindow(Form form)
+            Monitor Fullscreen.monitor => throw new NotImplementedException();
+
+            public string title { get => form.Name; set => form.Name = value; }
+
+            Vector2i PresentationContext.position => Vector2i.EMPTY;
+
+            public FullscreenForm(Form form)
             {
                 this.form = form;
                 form.FormBorderStyle = FormBorderStyle.None;
@@ -27,19 +34,23 @@ namespace ChaosFramework.Platform.WinForms
                 form.Controls.Add(control);
             }
 
-            void Window.Present()
+            void PresentationContext.Present()
             {
                 control.Context.MakeCurrent();
                 control.SwapBuffers();
             }
         }
 
-        public Form GetForm(Window window) => (window as FormWindow)?.form;
+        public Form GetForm(PresentationContext window) => (window as FullscreenForm)?.form;
 
-        Window PlatformContext.CreateWindow()
+        Window PlatformContext.CreateWindow(string title)
+            => throw new NotSupportedException();
+
+        Fullscreen PlatformContext.CreateFullscreen(string title)
         {
             var form = new Form();
-            var window = new FormWindow(form);
+            form.Name = title;
+            var window = new FullscreenForm(form);
             form.Show();
             form.FormClosing += RaiseTerminate;
             return window;

@@ -1,6 +1,6 @@
-using ChaosFramework.Math.Vectors;
-using OpenTK.GLControl;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace ChaosFramework.Platform.WinForms
@@ -9,48 +9,17 @@ namespace ChaosFramework.Platform.WinForms
         : PlatformContext
         , GlContext
     {
-        class FullscreenForm : Fullscreen
-        {
-            public readonly Form form;
-            readonly GLControl control;
-
-            uint PresentationContext.width => (uint)form.Width;
-            uint PresentationContext.height => (uint)form.Height;
-
-            Monitor Fullscreen.monitor => throw new NotImplementedException();
-
-            public string title { get => form.Name; set => form.Name = value; }
-
-            Vector2i PresentationContext.position => Vector2i.EMPTY;
-
-            public FullscreenForm(Form form)
-            {
-                this.form = form;
-                form.FormBorderStyle = FormBorderStyle.None;
-                form.Bounds = Screen.PrimaryScreen.Bounds;
-                control = new GLControl();
-                control.Bounds = form.ClientRectangle;
-                control.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top | AnchorStyles.Bottom;
-                form.Controls.Add(control);
-            }
-
-            void PresentationContext.Present()
-            {
-                control.Context.MakeCurrent();
-                control.SwapBuffers();
-            }
-        }
-
-        public Form GetForm(PresentationContext window) => (window as FullscreenForm)?.form;
-
         Window PlatformContext.CreateWindow(string title)
-            => throw new NotSupportedException();
+            => throw new NotImplementedException();
+            
+        Fullscreen PlatformContext.CreateFullscreen(string title, Monitor monitor)
+            => CreateFullscreen(title, monitor as WinFormsMonitor ?? throw new ArgumentException($"Monitor must be a {nameof(WinFormsMonitor)}."));
 
-        Fullscreen PlatformContext.CreateFullscreen(string title)
+        public WinFormsFullscreen CreateFullscreen(string title, WinFormsMonitor monitor)
         {
             var form = new Form();
             form.Name = title;
-            var window = new FullscreenForm(form);
+            var window = new WinFormsFullscreen(form, monitor);
             form.Show();
             form.FormClosing += RaiseTerminate;
             return window;
@@ -59,6 +28,9 @@ namespace ChaosFramework.Platform.WinForms
         Overhead PlatformContext.messageQueue => Overhead;
 
         GlContext PlatformContext.glContext => this;
+
+        public WinFormsMonitor PrimaryMontior => EnumerateMonitors().FirstOrDefault(s => s.screen.Primary);
+        Monitor PlatformContext.PrimaryMonitor => throw new NotImplementedException();
 
         public event Action Terminate;
 
@@ -73,5 +45,11 @@ namespace ChaosFramework.Platform.WinForms
 
         void RaiseTerminate(object _, EventArgs __)
             => Terminate?.Invoke();
+
+        public IEnumerable<WinFormsMonitor> EnumerateMonitors()
+            => Screen.AllScreens.Select(s => new WinFormsMonitor(s));
+
+        IEnumerable<Monitor> PlatformContext.EnumerateMonitors()
+            => EnumerateMonitors();
     }
 }

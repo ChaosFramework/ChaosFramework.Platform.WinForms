@@ -11,7 +11,7 @@ namespace ChaosFramework.Platform.WinForms
     {
         Window PlatformContext.CreateWindow(string title)
             => throw new NotImplementedException();
-            
+
         Fullscreen PlatformContext.CreateFullscreen(string title, Monitor monitor)
             => CreateFullscreen(title, monitor as WinFormsMonitor ?? throw new ArgumentException($"Monitor must be a {nameof(WinFormsMonitor)}."));
 
@@ -29,8 +29,8 @@ namespace ChaosFramework.Platform.WinForms
 
         GlContext PlatformContext.glContext => this;
 
-        public WinFormsMonitor PrimaryMontior => EnumerateMonitors().FirstOrDefault(s => s.screen.Primary);
-        Monitor PlatformContext.PrimaryMonitor => throw new NotImplementedException();
+        public WinFormsMonitor PrimaryMontior => new WinFormsMonitor(Screen.PrimaryScreen);
+        Monitor PlatformContext.PrimaryMonitor => PrimaryMontior;
 
         public event Action Terminate;
 

@@ -9,13 +9,14 @@ namespace ChaosFramework.Platform.WinForms
 {
     public class WinFormsFullscreen : Fullscreen
     {
+        public readonly WinFormsMonitor monitor;
         public readonly Form form;
         readonly GLControl control;
 
         uint PresentationContext.width => (uint)form.Width;
         uint PresentationContext.height => (uint)form.Height;
 
-        Monitor Fullscreen.monitor => throw new NotImplementedException();
+        Monitor Fullscreen.monitor => monitor;
 
         public string title { get => form.Name; set => form.Name = value; }
 
@@ -23,6 +24,7 @@ namespace ChaosFramework.Platform.WinForms
 
         public WinFormsFullscreen(Form form, WinFormsMonitor monitor)
         {
+            this.monitor = monitor;
             this.form = form;
             form.FormBorderStyle = FormBorderStyle.None;
             form.Bounds = monitor.screen.Bounds;

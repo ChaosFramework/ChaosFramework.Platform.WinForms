@@ -1,9 +1,9 @@
-
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
 using ChaosFramework.Math.Vectors;
 using OpenTK.GLControl;
-using System;
-using System.Drawing;
-using System.Windows.Forms;
 
 namespace ChaosFramework.Platform.WinForms
 {
@@ -32,6 +32,21 @@ namespace ChaosFramework.Platform.WinForms
             control.Bounds = form.ClientRectangle;
             control.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top | AnchorStyles.Bottom;
             form.Controls.Add(control);
+        }
+
+        void PresentationContext.SetIcon(IEnumerable<Stream> sources)
+        {
+            foreach (Stream candidate in sources)
+                try
+                {
+                    using (Icon ico = new Icon(candidate))
+                        SetIcon(ico);
+                    return;
+                }
+                catch
+                {
+                    // TODO: figure out what makes sense to actually catch here
+                }
         }
 
         public void SetIcon(Icon icon)

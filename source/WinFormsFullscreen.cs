@@ -1,9 +1,10 @@
-using System.Collections.Generic;
+
+using ChaosFramework.Math.Vectors;
+using OpenTK.GLControl;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using ChaosFramework.Math.Vectors;
-using OpenTK.GLControl;
 
 namespace ChaosFramework.Platform.WinForms
 {
@@ -34,19 +35,17 @@ namespace ChaosFramework.Platform.WinForms
             form.Controls.Add(control);
         }
 
-        void PresentationContext.SetIcon(IEnumerable<Stream> sources)
+        void PresentationContext.SetIcon(ApplicationIcon icon)
         {
-            foreach (Stream candidate in sources)
-                try
-                {
-                    using (Icon ico = new Icon(candidate))
-                        SetIcon(ico);
+            switch (icon.format)
+            {
+                case ApplicationIcon.IconFormat.ico:
+                    using (Stream str = icon.getStream())
+                        SetIcon(new Icon(str));
                     return;
-                }
-                catch
-                {
-                    // TODO: figure out what makes sense to actually catch here
-                }
+                default:
+                    throw new ArgumentException($"Unsupported format {icon.format}", nameof(icon));
+            }
         }
 
         public void SetIcon(Icon icon)

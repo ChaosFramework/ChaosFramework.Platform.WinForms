@@ -29,8 +29,8 @@ namespace ChaosFramework.Platform.WinForms
 
         GlContext PlatformContext.glContext => this;
 
-        public WinFormsMonitor PrimaryMontior => new WinFormsMonitor(Screen.PrimaryScreen);
-        Monitor PlatformContext.PrimaryMonitor => PrimaryMontior;
+        public WinFormsMonitor PrimaryMonitor => new WinFormsMonitor(Screen.PrimaryScreen);
+        Monitor PlatformContext.PrimaryMonitor => PrimaryMonitor;
 
         public event Action Terminate;
 

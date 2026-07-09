@@ -17,12 +17,12 @@ namespace ChaosFramework.Platform.WinForms
 
         public WinFormsFullscreen CreateFullscreen(string title, WinFormsMonitor monitor)
         {
-            var form = new Form();
+            Form form = new Form();
             form.Name = title;
-            var window = new WinFormsFullscreen(form, monitor);
+            WinFormsFullscreen fullscreen = new WinFormsFullscreen(form, monitor);
             form.Show();
             form.FormClosing += RaiseTerminate;
-            return window;
+            return fullscreen;
         }
 
         Overhead PlatformContext.messageQueue => Overhead;

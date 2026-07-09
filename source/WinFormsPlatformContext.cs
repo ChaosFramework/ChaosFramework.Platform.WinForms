@@ -9,23 +9,21 @@ namespace ChaosFramework.Platform.WinForms
         : PlatformContext
         , GlContext
     {
-        Form MakeAGoodForm(string title)
-        {
-            Form form = new Form();
-            form.Name = title;
-            form.Show();
-            form.FormClosing += RaiseTerminate;
-            return form;
-        }
-
         Window PlatformContext.CreateWindow(string title)
-            => new WinFormsWindow(MakeAGoodForm(title));
+            => throw new NotImplementedException();
 
         Fullscreen PlatformContext.CreateFullscreen(string title, Monitor monitor)
             => CreateFullscreen(title, monitor as WinFormsMonitor ?? throw new ArgumentException($"Monitor must be a {nameof(WinFormsMonitor)}."));
 
         public WinFormsFullscreen CreateFullscreen(string title, WinFormsMonitor monitor)
-            => new WinFormsFullscreen(MakeAGoodForm(title), monitor);
+        {
+            var form = new Form();
+            form.Name = title;
+            var window = new WinFormsFullscreen(form, monitor);
+            form.Show();
+            form.FormClosing += RaiseTerminate;
+            return window;
+        }
 
         Overhead PlatformContext.messageQueue => Overhead;
 

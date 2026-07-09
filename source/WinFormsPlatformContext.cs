@@ -21,7 +21,13 @@ namespace ChaosFramework.Platform.WinForms
             form.Name = title;
             WinFormsFullscreen fullscreen = new WinFormsFullscreen(form, monitor);
             form.Show();
-            form.FormClosing += RaiseTerminate;
+            FormClosingEventHandler raiseTerminate = null;
+            raiseTerminate = (_, _) =>
+            {
+                form.FormClosing -= raiseTerminate;
+                Terminate?.Invoke();
+            };
+            form.FormClosing += raiseTerminate;
             return fullscreen;
         }
 
@@ -42,9 +48,6 @@ namespace ChaosFramework.Platform.WinForms
             Cursor.Hide();
             Cursor.Position = Screen.PrimaryScreen.Bounds.Location;
         }
-
-        void RaiseTerminate(object _, EventArgs __)
-            => Terminate?.Invoke();
 
         public IEnumerable<WinFormsMonitor> EnumerateMonitors()
             => Screen.AllScreens.Select(s => new WinFormsMonitor(s));

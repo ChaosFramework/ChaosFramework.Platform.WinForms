@@ -21,13 +21,12 @@ namespace ChaosFramework.Platform.WinForms
             form.Name = title;
             WinFormsFullscreen fullscreen = new WinFormsFullscreen(form, monitor);
             form.Show();
-            FormClosingEventHandler raiseTerminate = null;
-            raiseTerminate = (_, _) =>
+            void RaiseTerminate(object _, FormClosingEventArgs __)
             {
-                form.FormClosing -= raiseTerminate;
+                form.FormClosing -= RaiseTerminate;
                 Terminate?.Invoke();
             };
-            form.FormClosing += raiseTerminate;
+            form.FormClosing += RaiseTerminate;
             return fullscreen;
         }
 

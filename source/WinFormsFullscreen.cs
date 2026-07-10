@@ -3,6 +3,7 @@ using ChaosFramework.Math.Vectors;
 using OpenTK.GLControl;
 using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace ChaosFramework.Platform.WinForms
@@ -32,6 +33,19 @@ namespace ChaosFramework.Platform.WinForms
             control.Bounds = form.ClientRectangle;
             control.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top | AnchorStyles.Bottom;
             form.Controls.Add(control);
+        }
+
+        void PresentationContext.SetIcon(ApplicationIcon icon)
+        {
+            switch (icon.format)
+            {
+                case ApplicationIcon.IconFormat.ico:
+                    using (Stream str = icon.getStream())
+                        SetIcon(new Icon(str));
+                    return;
+                default:
+                    throw new ArgumentException($"Unsupported format {icon.format}", nameof(icon));
+            }
         }
 
         public void SetIcon(Icon icon)

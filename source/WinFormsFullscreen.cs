@@ -56,5 +56,8 @@ namespace ChaosFramework.Platform.WinForms
             control.Context.MakeCurrent();
             control.SwapBuffers();
         }
+
+        void PresentationContext.Close()
+            => form.Close();
     }
 }
